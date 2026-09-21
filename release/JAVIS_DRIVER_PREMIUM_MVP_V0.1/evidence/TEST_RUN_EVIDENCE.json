@@ -1,0 +1,52 @@
+{
+  "testRunId": "TESTRUN_20260921_225430_FULL_REGRESSION",
+  "environment": {
+    "os": "Windows",
+    "gradle": "9.1.0",
+    "jdk": "17.0.20.1",
+    "targetPlatform": "Android (minSdk 24, targetSdk 36)",
+    "executionFlags": "--rerun-tasks --info"
+  },
+  "summary": {
+    "totalTests": 18,
+    "deterministicTests": 13,
+    "adversarialTests": 5,
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0,
+    "buildStatus": "SUCCESSFUL",
+    "apkGenerated": true,
+    "apkSizeBytes": 12119285,
+    "apkPath": "release/JAVIS_DRIVER_PREMIUM_MVP_V0.1/JAVIS_DRIVER_PREMIUM_MVP_V0.1.apk"
+  },
+  "criticalAssertions": {
+    "oppositeDirectionCamera": {
+      "assertion": "Opposite direction camera must NOT trigger alert",
+      "status": "PASS"
+    },
+    "alertBehindVehicle": {
+      "assertion": "Camera behind vehicle must NOT trigger alert",
+      "status": "PASS"
+    },
+    "unknownSpeedLimit": {
+      "assertion": "Unknown speed limit returns null / displays '--'",
+      "status": "PASS"
+    },
+    "unverifiedRoadFact": {
+      "assertion": "Unverified rumor is suppressed and never displayed as verified",
+      "status": "PASS"
+    },
+    "alertCooldown": {
+      "assertion": "Duplicate alert within cooldown window remains silent",
+      "status": "PASS"
+    },
+    "rapidUTurnFlip": {
+      "assertion": "Instant 180 deg U-turn switches road candidate safely",
+      "status": "PASS"
+    },
+    "speedExtremes": {
+      "assertion": "Highway speed 180km/h and crawling 1km/h handled with zero crash",
+      "status": "PASS"
+    }
+  }
+}

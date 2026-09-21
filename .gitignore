@@ -1,0 +1,16 @@
+# JDK and tooling
+.tools/
+.gradle/
+build/
+*/build/
+app/build/
+
+# Local configuration
+local.properties
+.env
+*.iml
+.idea/
+.DS_Store
+
+# Android Studio / Gradle caches
+.gradle-instrumented-classpath.marker
