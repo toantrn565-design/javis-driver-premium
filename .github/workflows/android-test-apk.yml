@@ -11,8 +11,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Extract V0.4 route preview source
-        run: unzip -oq JAVIS_Driver_V0.4_Route_Preview_SOURCE.zip 'android/*' 'tools/*' -d .
+      - name: Extract V0.5 voice route preview source
+        run: unzip -oq JAVIS_Driver_V0.5_Voice_Route_Preview_SOURCE.zip 'android/*' 'tools/*' -d .
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -25,6 +25,6 @@ jobs:
       - run: chmod +x android/gradlew && cd android && ./gradlew :app:testDebugUnitTest :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: JAVIS-Driver-V0.4-Route-Preview
+          name: JAVIS-Driver-V0.5-Voice-Route-Preview
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
