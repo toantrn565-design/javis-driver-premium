@@ -11,8 +11,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Extract reviewed V0.3 source package
-        run: unzip -oq JAVIS_Driver_V0.3_Three_Map_Modes_SOURCE.zip 'android/*' 'tools/*' -d .
+      - name: Extract V0.4 route preview source
+        run: unzip -oq JAVIS_Driver_V0.4_Route_Preview_SOURCE.zip 'android/*' 'tools/*' -d .
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -25,6 +25,6 @@ jobs:
       - run: chmod +x android/gradlew && cd android && ./gradlew :app:testDebugUnitTest :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: JAVIS-Driver-V0.3-Map-Test
+          name: JAVIS-Driver-V0.4-Route-Preview
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
