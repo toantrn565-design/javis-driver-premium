@@ -1,0 +1,28 @@
+name: Android test APK
+on:
+  push:
+    branches: [driver-v03-maps]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract reviewed V0.3 source package
+        run: unzip -oq JAVIS_Driver_V0.3_Three_Map_Modes_SOURCE.zip 'android/*' 'tools/*' -d .
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x android/gradlew && cd android && ./gradlew :app:testDebugUnitTest :app:assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JAVIS-Driver-V0.3-Map-Test
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
