@@ -2,7 +2,7 @@ name: Android emulator QA
 on:
   push:
     branches: [driver-v03-maps]
-    paths: ['JAVIS_Driver_Premium_V0.8_QA_SOURCE.zip', '.github/workflows/android-test-apk.yml']
+    paths: ['JAVIS_Driver_Premium_V0.8_INTEGRATED_QA_SOURCE.zip', '.github/workflows/android-test-apk.yml']
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Extract reviewed source
-        run: unzip -oq JAVIS_Driver_Premium_V0.8_QA_SOURCE.zip 'android/*' 'tools/*' -d .
+        run: unzip -oq JAVIS_Driver_Premium_V0.8_INTEGRATED_QA_SOURCE.zip 'android/*' 'tools/*' -d .
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -31,17 +31,17 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Test real map pixels in Android WebView
+      - name: Test real map pixels in Android WebView and driving screen
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
           arch: x86_64
           target: google_apis
-          script: bash -c 'cd android; ./gradlew :app:connectedDebugAndroidTest --stacktrace; code=$?; adb pull /sdcard/Android/data/com.example.javisdriverpremium.v08/files/javis-map-emulator.png ../javis-map-emulator.png || true; exit "$code"'
+          script: bash -c 'cd android; ./gradlew :app:connectedDebugAndroidTest --stacktrace; code=$?; adb pull /sdcard/Pictures/javis-map-emulator.png ../javis-map-emulator.png || true; exit "$code"'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: JAVIS-Driver-V0.8-Emulator-QA
+          name: JAVIS-Driver-V0.8-Integrated-Emulator-QA
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/reports/androidTests/connected/**
