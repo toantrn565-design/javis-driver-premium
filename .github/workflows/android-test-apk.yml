@@ -1,19 +1,20 @@
-name: Android test APK
+name: Android emulator QA
 on:
   push:
     branches: [driver-v03-maps]
-    paths: ['JAVIS_Driver_Premium_V0.7_SOURCE.zip']
+    paths: ['JAVIS_Driver_Premium_V0.8_QA_SOURCE.zip']
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-map-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Extract corrected source
-        run: unzip -oq JAVIS_Driver_Premium_V0.7_SOURCE.zip 'android/*' 'tools/*' -d .
+      - name: Extract reviewed source
+        run: unzip -oq JAVIS_Driver_Premium_V0.8_QA_SOURCE.zip 'android/*' 'tools/*' -d .
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -23,9 +24,32 @@ jobs:
           SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -n 1)
           "$SDKMANAGER" 'platforms;android-36' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x android/gradlew && cd android && ./gradlew :app:testDebugUnitTest :app:assembleDebug --stacktrace
-      - uses: actions/upload-artifact@v4
+      - name: JVM tests and APK
+        run: chmod +x android/gradlew && cd android && ./gradlew :app:testDebugUnitTest :app:assembleDebug --stacktrace
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Test real map pixels in Android WebView
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          name: JAVIS-Driver-Premium-V0.7-Map-Search
-          path: android/app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          script: |
+            set +e
+            cd android
+            ./gradlew :app:connectedDebugAndroidTest --stacktrace
+            result=$?
+            adb pull /sdcard/Android/data/com.example.javisdriverpremium.v08/files/javis-map-emulator.png ../javis-map-emulator.png || true
+            exit "$result"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: JAVIS-Driver-V0.8-Emulator-QA
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/app/build/reports/androidTests/connected/**
+            javis-map-emulator.png
+          if-no-files-found: warn
